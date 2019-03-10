@@ -36,6 +36,7 @@ def acme_client
   @client = Acme::Client.new(private_key: private_key, directory: directory)
 
   if node['acme']['private_key'].nil?
+	  Chef::Log.warn("Creating new account because pk=#{node['acme']['private_key']} and contact=#{node['acme']['contact']}")
     acme_client.new_account(contact: contact, terms_of_service_agreed: true)
     node.normal['acme']['private_key'] = private_key.to_pem
   end
@@ -48,6 +49,7 @@ def acme_order_certs_for(names)
 end
 
 def acme_validate(authz)
+	  Chef::Log.warn("Validate #{authz}")
   authz.request_validation
 
   times = 60
@@ -63,6 +65,7 @@ def acme_validate(authz)
 end
 
 def acme_cert(order, cn, key, alt_names = [])
+	Chef::Log.warn("Cert request...")
   csr = Acme::Client::CertificateRequest.new(
     common_name: cn,
     names: alt_names,
